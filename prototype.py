@@ -13,7 +13,7 @@ import pickle
 import face_recognition
 import os
 
-# construct the argument parser and parse the arguments
+# python prototype.py --encodings encodings.pickle 
 ap = argparse.ArgumentParser()
 ap.add_argument("-e", "--encodings", required=True,
     help="path to serialized db of facial encodings")
