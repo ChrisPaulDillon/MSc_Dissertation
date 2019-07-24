@@ -47,7 +47,7 @@ while True:
     encodings = face_recognition.face_encodings(rgb, boxes)
     names = []
 
-    # loop over the facial embeddings
+    #loop over the facial embeddings
     for encoding in encodings:
         #Attempt to match each face in the input image to our known encodings
         matches = face_recognition.compare_faces(data["encodings"],
@@ -72,8 +72,7 @@ while True:
             # of votes (note: in the event of an unlikely tie Python
             # will select first entry in the dictionary)
             name = max(counts, key=counts.get)
-           
-        
+                  
         #Update the list of names
         names.append(name)
 
@@ -98,8 +97,8 @@ while True:
             p = os.path.sep.join([args["output"], "{}.jpg".format(
             str(dateTime))])
             cv2.imwrite(p, orig)
-            subprocess.call(["python3", "/home/pi/Diss/ibm.py", "--img",
-                             "/home/pi/Diss/dataset/" + str(dateTime) + '.png'])
+            subprocess.call(["python3", "/home/pi/Diss/publish.py", "--img",
+                             "/home/pi/Diss/dataset/" + str(dateTime) + '.jpg'])
             time.sleep(10.0)
             
     #Check to see if we are supposed to display the output frame to the screen
