@@ -14,20 +14,26 @@ import face_recognition
 import os
 import subprocess
 
+# construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-o", "--output", type=str, default="dataset/",
-    help="path to output image")
+ap.add_argument("-e", "--encodings", default="encodings.pickle",
+    help="path to serialized db of facial encodings")
+ap.add_argument("-o", "--output", type=str, default="example",
+    help="path to output video")
 ap.add_argument("-y", "--display", type=int, default=1,
     help="whether or not to display output frame to screen")
+ap.add_argument("-d", "--detection-method", type=str, default="hog",
+    help="face detection model to use: either `hog` or `cnn`")
 args = vars(ap.parse_args())
 
 print("[INFO] loading encodings...")
-data = pickle.loads('encodings', "rb").read())
+data = pickle.loads(open('encodings.pickle', "rb").read())
 
 #Initialize the video stream and allow the camera sensor to warmup
 print("[INFO] warming up camera...")
 vs = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
+writer = None
 total = 0
 
 #Loop over the frames of the stream
@@ -43,7 +49,7 @@ while True:
     #Detect the (x, y)-coordinates of the bounding boxes
     #Corresponding to each face in the input frame, then compute the facial embeddings for each face
     boxes = face_recognition.face_locations(rgb,
-        model=hog)
+        model=args["detection_method"])
     encodings = face_recognition.face_encodings(rgb, boxes)
     names = []
 
@@ -90,7 +96,7 @@ while True:
         y = top - 15 if top - 15 > 15 else top + 15
         cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX,
             0.75, (0, 255, 0), 2)
- 	print (name, " Detected!")
+        print (name, " Detected!")
         if name == 'Unknown':
             print("[INFO] Unknown face detected! Taking screenshot!")
             dateTime = datetime.now()
@@ -101,6 +107,9 @@ while True:
                              "/home/pi/Diss/dataset/" + str(dateTime) + '.jpg'])
             time.sleep(10.0)
             
+    if writer is not None:
+        writer.write(frame)
+        
     #Check to see if we are supposed to display the output frame to the screen
     if args["display"] > 0:
         cv2.imshow("Frame", frame)
