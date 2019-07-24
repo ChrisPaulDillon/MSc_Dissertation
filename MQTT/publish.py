@@ -4,7 +4,7 @@ import hashlib
 
 broker="broker.hivemq.com"
 filename="00005.png" #file to send
-topic="data/files"
+topic="cpd1995/surveillance"
 qos=1
 data_block_size=2000
 fo=open(filename,"rb")
@@ -42,7 +42,7 @@ def send_header(filename):
    c_publish(client,topic,header,qos)
 
 def send_end(filename):
-   end="end"+",,"+filename+",,"+out_hash_md5.hexdigest()
+   end="end"+",,"+filename
    end=bytearray(end,"utf-8")
    end.extend(b','*(200-len(end)))
    print(end)
@@ -80,16 +80,14 @@ in_hash_md5 = hashlib.md5()
 while Run_flag:
    chunk=fo.read(data_block_size) # change if want smaller or larger data blcoks
    if chunk:
-      out_hash_md5.update(chunk)
       out_message=chunk
       #print(" length =",type(out_message))
       c_publish(client,topic,out_message,qos)
          
    else:
       #send hash
-      out_message=out_hash_md5.hexdigest()
       send_end(filename)
-      res,mid=client.publish("data/files",out_message,qos=1)#publish
+      res,mid=client.publish("cpd1995/surveillance",out_message,qos=1)#publish
       Run_flag=False
       
 time_taken=time.time()-start

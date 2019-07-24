@@ -12,12 +12,13 @@ import sys
 import pickle
 import face_recognition
 import os
+import subprocess
 
 # python prototype.py --encodings encodings.pickle 
 ap = argparse.ArgumentParser()
-ap.add_argument("-e", "--encodings", required=True,
+ap.add_argument("-e", "--encodings", default="encodings.pickle",
     help="path to serialized db of facial encodings")
-ap.add_argument("-o", "--output", type=str, default="example",
+ap.add_argument("-o", "--output", type=str, default="dataset/",
     help="path to output video")
 ap.add_argument("-y", "--display", type=int, default=1,
     help="whether or not to display output frame to screen")
@@ -81,6 +82,7 @@ while True:
             # of votes (note: in the event of an unlikely tie Python
             # will select first entry in the dictionary)
             name = max(counts, key=counts.get)
+            print (name, " Detected!")
         
         # update the list of names
         names.append(name)
@@ -101,10 +103,15 @@ while True:
             0.75, (0, 255, 0), 2)
         if name == 'Unknown':
             print("[INFO] Unknown face detected! Taking screenshot!")
+            dateTime = datetime.now()
             p = os.path.sep.join([args["output"], "{}.png".format(
-            str(total).zfill(5))])
+            str(dateTime))])
             cv2.imwrite(p, orig)
-            total += 1
+            subprocess.call(["python3", "/home/pi/Diss/ibm.py", "--img",
+                             "/home/pi/Diss/dataset/" + str(dateTime) + '.png'])
+            time.sleep(10.0)
+            
+
 
     # if the video writer is None *AND* we are supposed to write
     # the output video to disk initialize the writer

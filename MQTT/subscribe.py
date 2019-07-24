@@ -1,9 +1,10 @@
 import time
 import paho.mqtt.client as paho
 import hashlib
-broker="broker.hivemq.com"
+#broker="broker.hivemq.com"
+broker="iot.eclipse.org"
 filename="test.png"
-topic="data/files"
+topic="cpd1995/surveillance"
 qos=1
 data_block_size=2000
 file_out="copy-"+filename
@@ -18,10 +19,12 @@ def process_message(msg):
       msg_in=msg_in.split(",,")
       if msg_in[0]=="end": #is it really last packet?
          in_hash_final=in_hash_md5.hexdigest()
-         if in_hash_final==msg_in[2]:           
+         if in_hash_final==msg_in[2]:
+            bytes_in=0
             print("File copied OK -valid hash  ",in_hash_final)
             return -1
          else:
+            bytes_in=0
             print("Bad file receive   ",in_hash_final)
          return False
       else:
